@@ -1,0 +1,21 @@
+bot-onepiece/
+├── bot/                       # Lógica del bot y comandos
+│   ├── __init__.py
+│   ├── main.py               # Punto de entrada principal
+│   ├── handlers.py           # Funciones que responden a los comandos
+│   ├── states.py             # Gestión de estados para flujos guiados
+│   └── keyboards.py          # Inline keyboards (botones)
+│
+├── db/                        # Lógica de acceso a Supabase
+│   ├── __init__.py
+│   ├── client.py             # Cliente Supabase y conexión
+│   ├── models.py             # Funciones CRUD para users, cards, follows
+│   └── utils.py              # Transformadores, helpers
+│
+├── config/                    # Configuración y secretos
+│   ├── __init__.py
+│   └── settings.py           # API keys, tokens, etc.
+│
+├── requirements.txt
+├── .env                       # Variables de entorno (local)
+└── README.md
