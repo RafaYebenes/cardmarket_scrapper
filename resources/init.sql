@@ -23,14 +23,13 @@ create table cards (
 create table follows (
     id uuid primary key default gen_random_uuid(),
     user_id uuid references users(id) on delete cascade,
-    card_id uuid references cards(id) on delete cascade,
-    alert_type text check (alert_type in ('min', 'max')),
+    alert_type text check (alert_type in ('min', 'max', 'both')),
     target_price numeric(6,2) not null,
     min_quantity integer default 1,
     min_condition text, -- Ej: NM, EX, etc.
     last_alert_sent timestamp with time zone,
     created_at timestamp with time zone default now(),
-    unique (user_id, card_id, alert_type)
+    unique (user_id, alert_type)
 );
 
 -- Tabla de historial de precios (opcional)

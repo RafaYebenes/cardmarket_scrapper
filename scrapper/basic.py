@@ -74,14 +74,21 @@ async def parse_cardmarket_results(html):
         new_img = IMG_URL + codigo
         if extraer_set_id(img_url):
             new_img = new_img + "_p2"
+            card_name = card_name + " PB-XX"
+            version = "PB-XX"
         if version == 'V.2':
             new_img = new_img + "_p1"
+
+        if card_url.__contains__("Japanese"):
+            card_name = card_name + " JP"
 
         if card_url and card_name and img_url:
             results.append({
                 "text": card_name,
                 "url": card_url,
-                "image": new_img + ".png"
+                "image": new_img + ".png",
+                "code": codigo,
+                'version': version
             })
         else:
             print("❌ Elemento incompleto:", {
@@ -132,46 +139,12 @@ async def get_lower_price(card):
     return {
         **card,
         **price[0],
-        "last_check": datetime.now()
+        "last_check": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
 
 def create_file(name, content):
      with open(f"{name}.json", "w", encoding="utf-8") as out:
                 json.dump(content, out, indent=2, ensure_ascii=False)
-
-async def capture_card_image(card_page_url: str) -> str:
-    async with async_playwright() as p:
-        iphone = p.devices["iPhone 12"]
-        browser = await p.webkit.launch(headless=True)
-        context = await browser.new_context(**iphone)
-        page = await context.new_page()
-
-        try:
-            print(f"🌐 Cargando página de la carta: {card_page_url}")
-            await page.goto(card_page_url, timeout=60000)
-            await page.wait_for_selector("div#site img", timeout=10000)
-
-            html = page.content()
-            create_file("page", html)
-            # Encontrar la imagen de la carta dentro de la vista completa
-            img_element = await page.query_selector("div#site img")
-
-            if not img_element:
-                print("⚠️ No se encontró el elemento de imagen.")
-                return None
-
-            screenshot_bytes = await img_element.screenshot(type="png")
-            base64_image = base64.b64encode(screenshot_bytes).decode("utf-8")
-
-            return f"data:image/png;base64,{base64_image}"
-
-        except Exception as e:
-            print(f"❌ Error al capturar imagen: {e}")
-            return None
-        finally:
-            await context.close()
-            await browser.close()
-
 
 def extraer_set_id(url):
    return bool(re.search(r"/PB-[A-Z0-9]+/", url))

@@ -19,3 +19,6 @@ bot-onepiece/
 ├── requirements.txt
 ├── .env                       # Variables de entorno (local)
 └── README.md
+
+
+g?Rskk@r*ZTF6r3
