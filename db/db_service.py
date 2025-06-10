@@ -75,7 +75,7 @@ def insert_card(card):
                 VALUES (%s, %s, %s, %s, %s)
                 RETURNING id
             """, (card["code"], card["version"], card["name"], card["url"], card["image"]))
-            return cur.fetchone()["id"]
+            return cur.fetchone()[0]
 
 def get_all_cards():
     with get_connection() as conn:
@@ -108,7 +108,7 @@ def insert_tracked_card(tc):
                 ON CONFLICT (user_id, card_id) DO NOTHING
                 RETURNING id
             """, (tc["user_id"], tc["card_id"], tc["country"], tc["condition"], tc["quantity"], tc["last_price"], tc["last_check"]))
-            return cur.fetchone()["id"] if cur.rowcount > 0 else None
+            return cur.fetchone()[0] if cur.rowcount > 0 else None
 
 def get_all_tracked_cards():
     with get_connection() as conn:

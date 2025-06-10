@@ -22,8 +22,10 @@ async def handle_register_card(context, data, query):
         return
 
     # Guardar el seguimiento en Supabase o donde lo necesites
-    await register_card(card, user_id, modo)
-
+    if await register_card(card, user_id, modo):
+        await query.edit_message_caption("Seguimiento de carta añadido con exito.")
+    else:
+        await query.edit_message_caption("⚠️ Fallo al añadir el seguimiento.")
     await query.edit_message_caption(
         caption=f"📡 Seguimiento activado: {'⬆️' if modo == 'up' else '⬇️' if modo == 'down' else '⬆️⬇️'}\n\n"
                 f"🃏 {card['text']}"
@@ -39,20 +41,33 @@ async def register_card(card, user_id, mode):
         "image": card['image']
     }
 
-    inserted_card = insert_card(card_bbdd)
-    print(f'inserted card: {inserted_card}')
-    if inserted_card is not None:
+    card_id = insert_card(card_bbdd)
+    
+    if card_id:
         tracked_card = {
             'user_id': user_id,
-            'card_id': card_bbdd['id'],
+            'card_id': card_id,
             'country': card['country'],
             'condition': card['condition'],
             'quantity': card['quantity'],
             'last_price': card['price'],
-            'last_check': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            'last_check': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'mode': mode
         }
 
-    return ""
+        tc_id = insert_tracked_card(tracked_card)
+        if tc_id:
+            price_history = {
+                    'tracked_card_id': tc_id,
+                    'price': card['price'],
+                    'checked_at': tracked_card['last_check']
+            }
+
+            return insert_price_history(price_history)
+            
+
+
+    return False
 
 async def process_selected_card(query, card_ms, context):
     print(f"card: {card_ms}")
@@ -85,7 +100,9 @@ async def process_selected_card(query, card_ms, context):
         InlineKeyboardButton("Buscar 4", callback_data="qty_4")
     ]
 
-    keyboard = [seguimiento_buttons, cantidad_buttons]
+    restore_button =  [InlineKeyboardButton("🔙 Volver a resultados", callback_data="volver_resultados")]
+
+    keyboard = [seguimiento_buttons, cantidad_buttons, restore_button]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await query.message.reply_photo(
@@ -95,6 +112,8 @@ async def process_selected_card(query, card_ms, context):
         parse_mode="HTML"
     )
 
+    context.user_data["card_messages"] = []  # reset
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     card_code = update.message.text.strip().upper()
 
@@ -102,27 +121,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"✅ Código válido recibido: {card_code} \nBuscando resultados...")
         html = await scrapp_url(SEARCH_QUERY + card_code)
         matches = await parse_cardmarket_results(html)
-        for idx, item in enumerate(matches):
-            # Crea el botón con callback_data = índice del resultado
-            button = InlineKeyboardMarkup([
-                [InlineKeyboardButton("Ver más detalles", callback_data=f"card_{idx}")]
-            ])
+        await save_messages(matches, update, context)
 
-            await update.message.reply_photo(
-                photo=item["image"],
-                caption=item["text"],
-                reply_markup=button
-            )
-
-        # Guarda los resultados en el contexto para uso posterior
-        context.user_data["card_results"] = matches
     else:
         await update.message.reply_text("❌ Formato inválido. Usa uno de estos formatos:\n- OP01-142\n- EB02-555\n- PRB07-123")
 
 async def handle_button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-
+    chat_id = query.message.chat.id
     data = query.data
     print(f"data : {data}")
 
@@ -137,7 +144,9 @@ async def handle_button_click(update: Update, context: ContextTypes.DEFAULT_TYPE
             selected = results[idx]
 
             # Llamada a tu función personalizada
+            await hide_messages(context, query, chat_id)
             await process_selected_card(query, selected, context)
+
         else:
             await query.edit_message_text("❌ Resultado no encontrado.")
 
@@ -147,3 +156,30 @@ async def handle_button_click(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     elif data.startswith("track_"):
         await handle_register_card(context, data, query)
+
+async def save_messages(cards, update, context):
+    
+    context.user_data["card_messages"] = []  # reset
+
+    for idx, card in enumerate(cards):
+        message = await update.message.reply_photo(
+            photo=card["image"],
+            caption=card["text"],
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("Ver más detalles", callback_data=f"card_{idx}")]
+            ])
+        )
+        context.user_data["card_messages"].append(message.message_id)
+    
+    context.user_data["card_results"] = cards
+
+async def hide_messages(context, query, chat_id, ):
+    for msg_id in context.user_data.get("card_messages", []):
+            if msg_id != query.message.message_id:
+                try:
+                    await context.bot.delete_message(chat_id=chat_id, message_id=msg_id)
+                except:
+                    pass  # El mensaje ya fue borrado
+
+    # Guarda también los resultados para volver atrás si hace falta
+    context.user_data["cards"] = context.user_data.get("cards", [])

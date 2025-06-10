@@ -71,7 +71,7 @@ async def parse_cardmarket_results(html):
         codigo = (m := re.search(r"\((OP\d{2}-\d{3})\)", card_name)) and m.group(1)
         version = (v := re.search(r"\((V\.\d+)\)", card_name)) and v.group(1)
 
-        new_img = IMG_URL + codigo
+        new_img = IMG_URL + (codigo if codigo else "")
         if extraer_set_id(img_url):
             new_img = new_img + "_p2"
             card_name = card_name + " PB-XX"
@@ -132,7 +132,7 @@ async def parse_sellers(html_content):
     return sellers
 
 async def get_lower_price(card):
-    filtered_url = card["url"] + "?language=1"
+    filtered_url = card["url"] + "?language=1&sellerCountry=10"
     html = await scrapp_url(filtered_url)
     price = await parse_sellers(html) 
     
