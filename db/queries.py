@@ -1,0 +1,1 @@
+QUERY_TRACKED_CARDS_WITH_CARD_CODE = "SELECT tc.id, tc.card_id, tc.country, tc.condition, tc.quantity, tc.last_price, tc.last_check, c.code FROM tracked_cards as tc inner join cards as c on tc.card_id = c.id WHERE user_id = %s order by tc.id"

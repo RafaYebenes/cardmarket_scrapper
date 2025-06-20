@@ -71,8 +71,7 @@ async def register_card(card, user_id, mode):
 
 async def process_selected_card(query, card_ms, context):
     print(f"card: {card_ms}")
-    await query.edit_message_caption("Comprobando carta")
-
+       
     card = await get_lower_price(card_ms)
     context.user_data["selected_card"] = card
 
@@ -144,7 +143,7 @@ async def handle_button_click(update: Update, context: ContextTypes.DEFAULT_TYPE
             selected = results[idx]
 
             # Llamada a tu función personalizada
-            await hide_messages(context, query, chat_id)
+            await hide_messages(context, chat_id)
             await process_selected_card(query, selected, context)
 
         else:
@@ -173,13 +172,18 @@ async def save_messages(cards, update, context):
     
     context.user_data["card_results"] = cards
 
-async def hide_messages(context, query, chat_id, ):
+async def hide_messages(context, chat_id):
     for msg_id in context.user_data.get("card_messages", []):
-            if msg_id != query.message.message_id:
-                try:
-                    await context.bot.delete_message(chat_id=chat_id, message_id=msg_id)
-                except:
-                    pass  # El mensaje ya fue borrado
+            try:
+                await context.bot.delete_message(chat_id=chat_id, message_id=msg_id)
+            except:
+                pass  # El mensaje ya fue borrado
 
     # Guarda también los resultados para volver atrás si hace falta
     context.user_data["cards"] = context.user_data.get("cards", [])
+    
+    loading_msg = await context.bot.send_message(
+        chat_id=chat_id,
+        text="⏳ Comprobando carta..."
+    )
+   

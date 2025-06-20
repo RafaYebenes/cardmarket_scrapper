@@ -15,6 +15,7 @@ HTML_DUMP = "search_result.html"
 SEARCH_QUERY = "https://www.cardmarket.com/es/OnePiece/Products/Search?searchString="
 BOT_TOKER = "7194405151:AAHdeuhVtwmokePq0sEdJQwMR7dRY8CxR3Up"
 IMG_URL = "https://en.onepiece-cardgame.com/images/cardlist/card/"
+
 async def scrapp_url(query: str):
     
     async with async_playwright() as p:
@@ -134,6 +135,7 @@ async def parse_sellers(html_content):
 async def get_lower_price(card):
     filtered_url = card["url"] + "?language=1&sellerCountry=10"
     html = await scrapp_url(filtered_url)
+    create_file('cron_card', html)
     price = await parse_sellers(html) 
     
     return {
