@@ -1,0 +1,2 @@
+run = "python3 bot/bot.py"
+language = "python3"
