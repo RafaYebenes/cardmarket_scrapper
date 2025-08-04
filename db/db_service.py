@@ -1,5 +1,5 @@
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import psycopg
+from psycopg.rows import dict_row  # Para obtener resultados tipo diccionario
 import os
 from dotenv import load_dotenv
 from datetime import datetime
@@ -15,12 +15,13 @@ PORT = "6543"
 DBNAME = "postgres"
 
 def get_connection():
-     return psycopg2.connect(
+     return psycopg.connect(
         user=USER,
         password=PASSWORD,
         host=HOST,
         port=PORT,
-        dbname=DBNAME
+        dbname=DBNAME,
+        row_factory=dict_row 
     )
 
 # USERS
