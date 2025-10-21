@@ -106,6 +106,7 @@ async def parse_sellers(html_content):
     sellers = []
 
     row = rows[0]
+    
     try:
             
         location_tag = row.select_one("span.icon[aria-label]")
@@ -133,16 +134,23 @@ async def parse_sellers(html_content):
     return sellers
 
 async def get_lower_price(card):
-    filtered_url = card["url"] + "?language=1&sellerCountry=10"
-    html = await scrapp_url(filtered_url)
-    create_file('cron_card', html)
-    price = await parse_sellers(html) 
-    
-    return {
-        **card,
-        **price[0],
-        "last_check": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
+    try:
+        print("entramos en get lower price")
+        separator = '&' if '?' in card["url"] else '?'
+        filtered_url = card["url"] + f"{separator}language=1&sellerCountry=10"
+        html = await scrapp_url(filtered_url)
+        create_file('cron_card', html)
+        price = await parse_sellers(html) 
+        print(f"CARD: {card}")
+        print(f"PRICE: {price}")
+        return {
+            **card,
+            **price[0],
+            "last_check": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+    except Exception as e:
+        print(f"⚠️ Error al obtener precios: {e}")
+
 
 def create_file(name, content):
      with open(f"{name}.json", "w", encoding="utf-8") as out:

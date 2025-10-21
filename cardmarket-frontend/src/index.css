@@ -1,0 +1,6 @@
+.card-3d {
+  transform: perspective(800px) rotateY(-10deg);
+}
+.card-3d:hover {
+  transform: perspective(800px) rotateY(0deg);
+}
