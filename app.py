@@ -5,7 +5,7 @@ from services.card_service import fetch_cards
 from db import db_service
 import asyncio
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": ["http://opchecker.duckdns.org:5173"]}})
+CORS(app, resources={r"/api/*": {"origins": ["https://opchecker.duckdns.org:5173"]}})
 
 
 @app.route("/api/cards", methods=["GET"])
