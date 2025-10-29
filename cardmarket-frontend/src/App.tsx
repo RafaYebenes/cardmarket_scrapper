@@ -67,7 +67,7 @@ export default function CardSearch() {
     setCards([]);
     setLoadingMessageIndex(0);
     try {
-      const res = await fetch("http://localhost:5000/api/search_cards", {
+      const res = await fetch("http://213.165.85.8:5000/api/search_cards", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code })
