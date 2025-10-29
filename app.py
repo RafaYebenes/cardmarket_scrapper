@@ -5,7 +5,12 @@ from services.card_service import fetch_cards
 from db import db_service
 import asyncio
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": ["https://cardmarket-scrapper.vercel.app"]}})
+CORS(app, resources={r"/api/*": {
+    "origins": ["https://cardmarket-scrapper.vercel.app"],
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type"]
+}})
+
 
 
 @app.route("/api/cards", methods=["GET"])
