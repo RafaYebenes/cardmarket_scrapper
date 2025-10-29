@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 
 const loadingMessages = [
@@ -8,6 +8,16 @@ const loadingMessages = [
   "paciencia, joven nakama...",
   "esto tarda más que Luffy subiendo la torre de Enies Lobby"
 ];
+
+export interface Card {
+  image: string;
+  text: string;
+  code: string;
+  version?: string;
+  collection: string;
+  price?: number;
+}
+
 
 export default function CardSearch() {
   const [code, setCode] = useState("");
@@ -28,7 +38,8 @@ export default function CardSearch() {
 
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
+
     if (loading) {
       interval = setInterval(() => {
         setLoadingMessageIndex((prev) => (prev + 1) % loadingMessages.length);
@@ -105,7 +116,7 @@ export default function CardSearch() {
       {error && <p className="error">{error}</p>}
 
       <div className="card-grid" >
-        {cards.map((card, idx) => (
+        {cards.map((card:Card, idx) => (
           <div className="card-container" key={idx}>
             <img src={card.image} alt={card.text} className="card-image" />
             <div className="card-overlay">
