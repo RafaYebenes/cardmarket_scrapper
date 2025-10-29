@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5067046815810083"
-     crossOrigin="anonymous"></script>
-     
+
 const loadingMessages = [
   "Cargando...",
   "illo ya se que tarda pero cardmarket no lo pone fácil para sacar las cartas",
