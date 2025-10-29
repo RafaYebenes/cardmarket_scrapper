@@ -5,7 +5,7 @@ from services.card_service import fetch_cards
 from db import db_service
 import asyncio
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": ["http://localhost:5173"]}})
+CORS(app, resources={r"/api/*": {"origins": ["http://213.165.85.8:5173"]}})
 
 
 @app.route("/api/cards", methods=["GET"])
@@ -64,4 +64,5 @@ def get_tracked_cards(user_id):
     return jsonify(tracked)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="213.165.85.8", port=5173, debug=True)
+
