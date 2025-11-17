@@ -16,13 +16,16 @@ async def fetch_cards(code):
     inserted_cards = []
     try:
         for i, card in enumerate(cards_with_prices):
-            print(f"\n📦 CARD #{i} = {card} (type: {type(card)})")
+            print(f"\n📦 CARD #{i} = {card.name}")
             if not isinstance(card, dict):
                 print(f"❌ Saltando, no es un dict → {card}")
                 continue
             try:
                 extract_collection_from_url(card)
+                print("-----CARGAMOS EN BBDD-----")
                 new_card = insert_card(card)
+                print(f"{new_card}")
+                
                 inserted_cards.append(new_card)
             except Exception as e:
                 print(f"⚠️ Error al extraer colección: {e} → {card}")
@@ -30,7 +33,9 @@ async def fetch_cards(code):
     except Exception as e:
         print(f"⚠️ Error en fetch_cards: {e}")
 
-        
+    print("-----CARTAS CARGADAS EN  BBDD-----")
+    print(f"{inserted_cards}")
+    
     return cards_with_prices
 
 
