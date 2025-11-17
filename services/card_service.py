@@ -31,7 +31,7 @@ async def fetch_cards(code):
         print(f"⚠️ Error en fetch_cards: {e}")
 
         
-    return inserted_cards
+    return cards_with_prices
 
 
 def track_card(data):
