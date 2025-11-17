@@ -22,7 +22,7 @@ def get_cards():
 def track_card():
     data = request.get_json()
 
-    user_id = data.get("user_id")
+    user_id = 258110133
     card_id = data.get("card_id")
     country = data.get("country")
     condition = data.get("condition")

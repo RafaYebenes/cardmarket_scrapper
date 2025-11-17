@@ -1,4 +1,4 @@
-from db.db_service import  insert_tracked_card, delete_tracked_card
+from db.db_service import  insert_tracked_card, delete_tracked_card, insert_card
 from scrapper.basic import scrapp_url, get_lower_price, parse_cardmarket_results
 import asyncio
 from services.card_data import CARDMARKET_COLLECTIONS
@@ -13,6 +13,7 @@ async def fetch_cards(code):
             
     cards_with_prices = await asyncio.gather(*(get_lower_price(card) for card in filtered_matches))
     cards_with_prices = [card for card in cards_with_prices if isinstance(card, dict)]
+    inserted_cards = set()
     try:
         for i, card in enumerate(cards_with_prices):
             print(f"\n📦 CARD #{i} = {card} (type: {type(card)})")
@@ -21,6 +22,8 @@ async def fetch_cards(code):
                 continue
             try:
                 extract_collection_from_url(card)
+                new_card = insert_card(card)
+                inserted_cards.add(new_card)
             except Exception as e:
                 print(f"⚠️ Error al extraer colección: {e} → {card}")
    
@@ -28,7 +31,7 @@ async def fetch_cards(code):
         print(f"⚠️ Error en fetch_cards: {e}")
 
         
-    return cards_with_prices
+    return inserted_cards
 
 
 def track_card(data):

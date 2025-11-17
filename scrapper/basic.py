@@ -139,7 +139,7 @@ async def get_lower_price(card):
         separator = '&' if '?' in card["url"] else '?'
         filtered_url = card["url"] + f"{separator}language=1&sellerCountry=10"
         html = await scrapp_url(filtered_url)
-        create_file('cron_card', html)
+        
         price = await parse_sellers(html) 
         print(f"CARD: {card}")
         print(f"PRICE: {price}")
@@ -180,10 +180,7 @@ if __name__ == "__main__":
             selected_card = matches[selection - 1]
             print(f"\n🔁 Buscando precios para: {selected_card['text']}")
             
-            lower_card = get_lower_price(selected_card) 
-
-            create_file("lower_price_card", lower_card)
-            
+            lower_card = get_lower_price(selected_card)            
 
         else:
             print("❌ Selección no válida.")
