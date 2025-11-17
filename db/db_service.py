@@ -85,14 +85,34 @@ def serialize_rows(rows, columns):
 # CARDS
 
 def insert_card(card):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                INSERT INTO cards (code, version, name, url, image)
-                VALUES (%s, %s, %s, %s, %s)
-                RETURNING id
-            """, (card["code"], card["version"], card["name"], card["url"], card["image"]))
-            return cur.fetchone()[0]
+    try:
+        print(f"Insertando Carta {card}")
+        with get_connection() as conn:
+            print(f"get_connection {conn}")
+            with conn.cursor() as cur:
+                cur.execute("""
+                    INSERT INTO cards (code, version, name, url, image)
+                    VALUES (%s, %s, %s, %s, %s)
+                    RETURNING id
+                """, (
+                    card["code"],
+                    card["version"],
+                    card["text"],   # o card["name"] si lo tienes así
+                    card["url"],
+                    card["image"],
+                ))
+                
+                row = cur.fetchone()   # UNA sola vez
+                # Como usas row_factory=dict_row, row es un dict-ish
+                card_id = row["id"]
+                print(f"✅ execute query, id = {card_id}")
+                return card_id
+
+    except Exception as e:
+        print(f"⚠️ Error en insert_card: {e}")
+        return None
+
+    
 
 def get_all_cards():
     with get_connection() as conn:

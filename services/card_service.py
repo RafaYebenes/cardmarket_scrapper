@@ -16,7 +16,6 @@ async def fetch_cards(code):
     inserted_cards = []
     try:
         for i, card in enumerate(cards_with_prices):
-            print(f"\n📦 CARD #{i} = {card.name}")
             if not isinstance(card, dict):
                 print(f"❌ Saltando, no es un dict → {card}")
                 continue
