@@ -27,7 +27,7 @@ export default function CardSearchPremium() {
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const url = "https://opchecker.duckdns.org/api/search_cards"
-  const test_url = "http://127.0.0.1:5000/api/search_cards"
+  //const test_url = "http://127.0.0.1:5000/api/search_cards"
 
   const loadingGifs = [
     "https://img.wattpad.com/289854af8ed62b0da17cb6469f8b629bc4a5d1d1/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f776174747061642d6d656469612d736572766963652f53746f7279496d6167652f365538505a324635425a4d5630673d3d2d38312e313462656138363065363934663365373730333639353638303135362e676966",
