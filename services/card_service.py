@@ -13,7 +13,7 @@ async def fetch_cards(code):
             
     cards_with_prices = await asyncio.gather(*(get_lower_price(card) for card in filtered_matches))
     cards_with_prices = [card for card in cards_with_prices if isinstance(card, dict)]
-    inserted_cards = set()
+    inserted_cards = []
     try:
         for i, card in enumerate(cards_with_prices):
             print(f"\n📦 CARD #{i} = {card} (type: {type(card)})")
@@ -23,7 +23,7 @@ async def fetch_cards(code):
             try:
                 extract_collection_from_url(card)
                 new_card = insert_card(card)
-                inserted_cards.add(new_card)
+                inserted_cards.append(new_card)
             except Exception as e:
                 print(f"⚠️ Error al extraer colección: {e} → {card}")
    
