@@ -21,11 +21,13 @@ async def fetch_cards(code):
                 continue
             try:
                 extract_collection_from_url(card)
-                print("-----CARGAMOS EN BBDD-----")
-                new_card = insert_card(card)
-                print(f"{new_card}")
                 
-                inserted_cards.append(new_card)
+                if i == 0:
+                    print("-----CARGAMOS EN BBDD SOLO LA PRIMERA CARTA-----")
+                    new_card = insert_card(card)
+                    print(f"{new_card}")
+                    inserted_cards.append(new_card)
+                    
             except Exception as e:
                 print(f"⚠️ Error al extraer colección: {e} → {card}")
    

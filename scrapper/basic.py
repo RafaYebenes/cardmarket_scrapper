@@ -37,7 +37,6 @@ async def scrapp_url(query: str):
         
         await browser.close()
 
-        create_file("search_result", html)
         return html
 
 async def parse_cardmarket_results(html):
